@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { motion, useSpring, useMotionValue } from 'framer-motion';
 import { 
   Code, 
   Cpu, 
@@ -234,8 +234,9 @@ const StructuralScene = () => {
     };
     window.addEventListener('mousemove', handleMouse);
 
+    let animationId: number;
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
       
       // Mechanical Rotation
       group.rotation.x += 0.002;
@@ -262,11 +263,22 @@ const StructuralScene = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouse);
+      cancelAnimationFrame(animationId);
+      
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
+      
+      // FIX: Clean up specifically defined resources
       geometry.dispose();
-      material.dispose(); // Using geometry.dispose() is enough for wireframes usually
+      wireframe.dispose();
+      lineMat.dispose();
+      
+      coreGeo.dispose();
+      coreMat.dispose();
+      
+      debrisGeo.dispose();
+      debrisMat.dispose();
     };
   }, []);
 
