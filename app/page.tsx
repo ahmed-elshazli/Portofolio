@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { motion, useScroll, useSpring, useMotionValue } from 'framer-motion';
 import { 
   Code, 
   Cpu, 
@@ -153,6 +153,7 @@ const EngineeringCursor = () => {
     return () => window.removeEventListener('mousemove', move);
   }, [mouseX, mouseY]);
 
+  // Render only on non-touch devices ideally, but simplified here
   return (
     <>
       <motion.div
@@ -513,7 +514,7 @@ export default function IndustrialPortfolio() {
       <main className="relative z-10 px-6 md:px-12 max-w-[1400px] mx-auto pt-32 pb-20">
         
         {/* HERO SECTION - RESTRUCTURED (NO IMAGE) */}
-        <section id="core" className="min-h-[70vh] flex flex-col justify-center border-l border-white/10 pl-8 ml-4 md:ml-0">
+        <section id="core" className="min-h-[85vh] flex flex-col justify-center border-l border-white/10 pl-8 ml-4 md:ml-0">
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
             animate={{ opacity: 1, x: 0 }} 
@@ -603,7 +604,7 @@ export default function IndustrialPortfolio() {
             <div className="flex gap-6">
               <a href="https://github.com/ahmed-elshazli" className="hover:text-[#ffae00]">Github</a>
               <a href="https://www.linkedin.com/in/ahmed-elshazly-3a3427305?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" className="hover:text-[#ffae00]">LinkedIn</a>
-              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Instagram</a>
+              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">instagram</a>
             </div>
           </footer>
         </SectionWrapper>
