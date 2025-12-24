@@ -466,9 +466,42 @@ const TechGridItem = ({ icon: Icon, title, items }: any) => (
 /* -------------------------------------------------------------------------- */
 
 export default function IndustrialPortfolio() {
+  
+  // Data for projects (Easy to edit)
+  const projects = [
+    {
+      title: "Neon Finance",
+      type: "FINTECH_DASHBOARD",
+      desc: "Real-time trading interface utilizing WebSockets for sub-millisecond data updates and WebGL for rendering complex financial charts.",
+      tags: ['React', 'D3.js', 'Sockets']
+    },
+    {
+      title: "Aero Space",
+      type: "3D_ECOMMERCE",
+      desc: "Interactive 3D configurator for industrial drones. Physics-based rendering engine implemented directly in the browser.",
+      tags: ['Three.js', 'Next.js', 'Stripe']
+    },
+    {
+      title: "Zenith AI",
+      type: "PREDICTIVE_SAAS",
+      desc: "Machine learning dashboard featuring dark-mode industrial aesthetics and heavy data processing capabilities.",
+      tags: ['Python', 'TypeScript', 'AI']
+    },
+    // ضيف مشروعك الجديد هنا بنفس الشكل:
+    // { title: "My New Project", type: "WEB APP", desc: "...", tags: ["Next.js", "Tailwind"] },
+  ];
+
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#ffae00] selection:text-black">
       <GlobalStyles />
+      {/* Scan animation Keyframes */}
+      <style>{`
+        @keyframes scan {
+          0% { top: -10%; opacity: 0; }
+          50% { opacity: 0.5; }
+          100% { top: 110%; opacity: 0; }
+        }
+      `}</style>
       <div className="vignette" />
       <div className="scanlines" />
       <ScrollProgress />
@@ -479,7 +512,7 @@ export default function IndustrialPortfolio() {
 
       <main className="relative z-10 px-6 md:px-12 max-w-[1400px] mx-auto pt-32 pb-20">
         
-        {/* HERO SECTION */}
+        {/* HERO SECTION - RESTRUCTURED (NO IMAGE) */}
         <section id="core" className="min-h-[70vh] flex flex-col justify-center border-l border-white/10 pl-8 ml-4 md:ml-0">
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
@@ -491,7 +524,7 @@ export default function IndustrialPortfolio() {
               Status: Operational
             </div>
             
-            <h1 className="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
               <TechText text="SYSTEM" className="block text-white" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 to-white block">
                 ARCHITECT.
@@ -502,7 +535,7 @@ export default function IndustrialPortfolio() {
               Ahmed Elshazli. Engineering high-performance digital infrastructures. <span className="text-[#ffae00]">CCNA Certified</span> Network Specialist & Frontend Developer.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-4">
               <a href="#protocols" className="bg-[#ffae00] text-black px-8 py-4 font-bold text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2">
                 Init_Sequence <ArrowUpRight size={14} />
               </a>
@@ -536,27 +569,16 @@ export default function IndustrialPortfolio() {
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            <ProjectRow 
-              index="1" 
-              title="Neon Finance" 
-              type="FINTECH_DASHBOARD" 
-              desc="Real-time trading interface utilizing WebSockets for sub-millisecond data updates and WebGL for rendering complex financial charts."
-              tags={['React', 'D3.js', 'Sockets']}
-            />
-            <ProjectRow 
-              index="2" 
-              title="Aero Space" 
-              type="3D_ECOMMERCE" 
-              desc="Interactive 3D configurator for industrial drones. Physics-based rendering engine implemented directly in the browser."
-              tags={['Three.js', 'Next.js', 'Stripe']}
-            />
-            <ProjectRow 
-              index="3" 
-              title="Zenith AI" 
-              type="PREDICTIVE_SAAS" 
-              desc="Machine learning dashboard featuring dark-mode industrial aesthetics and heavy data processing capabilities."
-              tags={['Python', 'TypeScript', 'AI']}
-            />
+            {projects.map((project, i) => (
+              <ProjectRow 
+                key={i}
+                index={i + 1}
+                title={project.title}
+                type={project.type}
+                desc={project.desc}
+                tags={project.tags}
+              />
+            ))}
           </div>
         </SectionWrapper>
 
@@ -576,12 +598,12 @@ export default function IndustrialPortfolio() {
             </span>
           </a>
 
-          <footer className="mt-20 w-full border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between text-[9px] font-mono uppercase text-gray-500 gap-4 md:gap-0">
+          <footer className="mt-20 w-full border-t border-white/10 pt-8 flex justify-between text-[9px] font-mono uppercase text-gray-500 gap-4 md:gap-0">
             <span>© 2025 Ahmed Elshazli</span>
             <div className="flex gap-6">
               <a href="https://github.com/ahmed-elshazli" className="hover:text-[#ffae00]">Github</a>
               <a href="https://www.linkedin.com/in/ahmed-elshazly-3a3427305?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" className="hover:text-[#ffae00]">LinkedIn</a>
-              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Twitter</a>
+              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Instagram</a>
             </div>
           </footer>
         </SectionWrapper>
