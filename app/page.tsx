@@ -579,9 +579,9 @@ export default function IndustrialPortfolio() {
           <footer className="mt-20 w-full border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between text-[9px] font-mono uppercase text-gray-500 gap-4 md:gap-0">
             <span>© 2025 Ahmed Elshazli</span>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-[#ffae00]">Github</a>
-              <a href="#" className="hover:text-[#ffae00]">LinkedIn</a>
-              <a href="#" className="hover:text-[#ffae00]">Twitter</a>
+              <a href="https://github.com/ahmed-elshazli" className="hover:text-[#ffae00]">Github</a>
+              <a href="https://www.linkedin.com/in/ahmed-elshazly-3a3427305?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" className="hover:text-[#ffae00]">LinkedIn</a>
+              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Twitter</a>
             </div>
           </footer>
         </SectionWrapper>
