@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { 
   Code, 
   Cpu, 
@@ -19,11 +19,13 @@ import {
   Box,
   Layers,
   Settings,
-  Database
+  Database,
+  Menu,
+  X
 } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
-/* 1. GLOBAL STYLES (Industrial Theme)                                        */
+/* 1. GLOBAL STYLES (Industrial Theme & Polish)                               */
 /* -------------------------------------------------------------------------- */
 
 const GlobalStyles = () => (
@@ -43,7 +45,7 @@ const GlobalStyles = () => (
     body {
       background-color: var(--bg-core);
       color: var(--text-main);
-      font-family: 'JetBrains Mono', monospace; /* Monospace for technical feel */
+      font-family: 'JetBrains Mono', monospace;
       overflow-x: hidden;
       background-image: 
         linear-gradient(var(--grid-line) 1px, transparent 1px),
@@ -52,12 +54,27 @@ const GlobalStyles = () => (
       background-position: center top;
     }
 
-    /* Vignette for focus */
+    /* Vignette & Scanlines for atmosphere */
     .vignette {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 9997;
       background: radial-gradient(circle, transparent 30%, rgba(10,10,10,0.95) 100%);
+    }
+
+    .scanlines {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.1) 50%,
+        rgba(0,0,0,0.1)
+      );
+      background-size: 100% 4px;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 9996;
     }
 
     ::selection {
@@ -113,7 +130,7 @@ const TechText = ({ text, className, speed = 40 }: { text: string, className?: s
 };
 
 /* -------------------------------------------------------------------------- */
-/* 3. ENGINEERING CURSOR (Square Reticle)                                     */
+/* 3. ENGINEERING CURSOR                                                      */
 /* -------------------------------------------------------------------------- */
 
 const EngineeringCursor = () => {
@@ -121,7 +138,7 @@ const EngineeringCursor = () => {
   const mouseY = useMotionValue(-100);
   const [hovered, setHovered] = useState(false);
   
-  const springConfig = { damping: 25, stiffness: 500 }; // Tighter spring
+  const springConfig = { damping: 25, stiffness: 500 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
@@ -138,7 +155,6 @@ const EngineeringCursor = () => {
 
   return (
     <>
-      {/* Center Cross */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999]"
         style={{ x: cursorX, y: cursorY, translateX: '-50%', translateY: '-50%' }}
@@ -149,7 +165,6 @@ const EngineeringCursor = () => {
         </div>
       </motion.div>
 
-      {/* Outer Bracket Box */}
       <motion.div
         className="fixed top-0 left-0 border border-[#ffae00] pointer-events-none z-[9998]"
         style={{ x: cursorX, y: cursorY, translateX: '-50%', translateY: '-50%' }}
@@ -162,7 +177,6 @@ const EngineeringCursor = () => {
         transition={{ duration: 0.2 }}
       />
       
-      {/* Data Label */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9998] ml-8 mt-8"
         style={{ x: cursorX, y: cursorY }}
@@ -175,7 +189,7 @@ const EngineeringCursor = () => {
 };
 
 /* -------------------------------------------------------------------------- */
-/* 4. 3D STRUCTURAL SCENE (Wireframe Core)                                    */
+/* 4. 3D STRUCTURAL SCENE (Refined)                                           */
 /* -------------------------------------------------------------------------- */
 
 const StructuralScene = () => {
@@ -185,7 +199,6 @@ const StructuralScene = () => {
     if (!mountRef.current) return;
 
     const scene = new THREE.Scene();
-    // No fog for sharp industrial look, or very slight
     scene.fog = new THREE.FogExp2(0x0a0a0a, 0.015);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -196,41 +209,49 @@ const StructuralScene = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
+    // --- LIGHTING ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.02); 
+    scene.add(ambientLight);
+
+    const flashlight = new THREE.PointLight(0xffae00, 8, 45, 1.5);
+    flashlight.position.z = 15;
+    scene.add(flashlight);
+
+    const rimLight = new THREE.DirectionalLight(0x224466, 0.5);
+    rimLight.position.set(-10, 10, -10);
+    scene.add(rimLight);
+
     // --- OBJECTS ---
     const group = new THREE.Group();
     scene.add(group);
 
-    // 1. Central Core (Torus Knot)
     const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
     const wireframe = new THREE.WireframeGeometry(geometry);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0xffae00, transparent: true, opacity: 0.3 });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xffae00, transparent: true, opacity: 0.15 });
     const line = new THREE.LineSegments(wireframe, lineMat);
     group.add(line);
 
-    // 2. Inner Solid Core
     const coreGeo = new THREE.IcosahedronGeometry(4, 1);
-    const coreMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true });
+    const coreMat = new THREE.MeshStandardMaterial({ 
+      color: 0x111111, 
+      roughness: 0.3,
+      metalness: 0.9,
+      emissive: 0x000000
+    });
     const core = new THREE.Mesh(coreGeo, coreMat);
     group.add(core);
-
-    // 3. Floating Debris
-    const debrisCount = 400;
-    const debrisGeo = new THREE.BufferGeometry();
-    const debrisPos = new Float32Array(debrisCount * 3);
-    for(let i=0; i<debrisCount*3; i++) {
-      debrisPos[i] = (Math.random() - 0.5) * 100;
-    }
-    debrisGeo.setAttribute('position', new THREE.BufferAttribute(debrisPos, 3));
-    const debrisMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.5 });
-    const debris = new THREE.Points(debrisGeo, debrisMat);
-    scene.add(debris);
 
     // --- ANIMATION ---
     let mouseX = 0;
     let mouseY = 0;
+    let nMouseX = 0;
+    let nMouseY = 0;
+
     const handleMouse = (e: MouseEvent) => {
       mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
       mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+      nMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      nMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener('mousemove', handleMouse);
 
@@ -238,14 +259,19 @@ const StructuralScene = () => {
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       
-      // Mechanical Rotation
+      const aspect = window.innerWidth / window.innerHeight;
+      const targetX = nMouseX * 50 * aspect; 
+      const targetY = nMouseY * 50;
+      
+      flashlight.position.x += (targetX - flashlight.position.x) * 0.1;
+      flashlight.position.y += (targetY - flashlight.position.y) * 0.1;
+
       group.rotation.x += 0.002;
       group.rotation.y += 0.005;
       
       core.rotation.x -= 0.01;
       core.rotation.y -= 0.01;
 
-      // Mouse Parallax
       group.rotation.x += mouseY * 0.05;
       group.rotation.y += mouseX * 0.05;
 
@@ -269,25 +295,36 @@ const StructuralScene = () => {
         mountRef.current.removeChild(renderer.domElement);
       }
       
-      // FIX: Clean up specifically defined resources
       geometry.dispose();
       wireframe.dispose();
       lineMat.dispose();
-      
       coreGeo.dispose();
       coreMat.dispose();
-      
-      debrisGeo.dispose();
-      debrisMat.dispose();
     };
   }, []);
 
-  return <div ref={mountRef} className="fixed inset-0 z-0 opacity-40 pointer-events-none" />;
+  return <div ref={mountRef} className="fixed inset-0 z-0 opacity-100 pointer-events-none" />;
 };
 
 /* -------------------------------------------------------------------------- */
-/* 5. UI: SYSTEM STATUS HUD                                                   */
+/* 5. UI: SCROLL PROGRESS & HUD                                               */
 /* -------------------------------------------------------------------------- */
+
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-1 bg-[#ffae00] origin-left z-[100]"
+      style={{ scaleX }}
+    />
+  );
+};
 
 const SystemHUD = () => {
   return (
@@ -322,31 +359,64 @@ const SectionWrapper = ({ children, id, className }: { children: React.ReactNode
   </motion.section>
 );
 
-const NavBar = () => (
-  <nav className="fixed top-0 w-full z-50 p-8 flex justify-between items-center pointer-events-none bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px]">
-    <div className="pointer-events-auto flex items-center gap-3">
-      <div className="w-8 h-8 bg-[#ffae00] flex items-center justify-center text-black font-black text-xs">AE</div>
-      <div className="flex flex-col">
-        <span className="text-sm font-bold text-white tracking-wider">AHMED.DEV</span>
-        <span className="text-[9px] text-[#ffae00] tracking-[0.2em]">ENG_ID: 8492</span>
+const NavBar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  return (
+    <nav className="fixed top-0 w-full z-50 p-6 md:p-8 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-[2px]">
+      <div className="pointer-events-auto flex items-center gap-3 relative z-50">
+        <div className="w-8 h-8 bg-[#ffae00] flex items-center justify-center text-black font-black text-xs">AE</div>
+        <div className="flex flex-col">
+          <span className="text-sm font-bold text-white tracking-wider">AHMED.DEV</span>
+          <span className="text-[9px] text-[#ffae00] tracking-[0.2em]">ENG_ID: 8492</span>
+        </div>
       </div>
-    </div>
-    
-    <div className="hidden md:flex gap-1 pointer-events-auto">
-      {['[ CORE ]', '[ STACK ]', '[ PROTOCOLS ]', '[ LINK ]'].map((item, i) => (
-        <a key={i} href={`#${item.replace(/\[|\]|\s/g, '').toLowerCase()}`} className="px-4 py-2 text-[10px] font-bold text-gray-400 hover:text-[#ffae00] hover:bg-white/5 transition-all border border-transparent hover:border-[#ffae00]/30">
-          {item}
-        </a>
-      ))}
-    </div>
-  </nav>
-);
+      
+      {/* Desktop Menu */}
+      <div className="hidden md:flex gap-1 pointer-events-auto">
+        {['[ CORE ]', '[ STACK ]', '[ PROTOCOLS ]', '[ LINK ]'].map((item, i) => (
+          <a key={i} href={`#${item.replace(/\[|\]|\s/g, '').toLowerCase()}`} className="px-4 py-2 text-[10px] font-bold text-gray-400 hover:text-[#ffae00] hover:bg-white/5 transition-all border border-transparent hover:border-[#ffae00]/30">
+            {item}
+          </a>
+        ))}
+      </div>
+
+      {/* Mobile Menu Toggle */}
+      <div className="md:hidden pointer-events-auto z-50">
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="text-[#ffae00] p-2 border border-[#ffae00]/30 bg-black/50"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-0 left-0 w-full bg-black/95 border-b border-[#ffae00]/30 p-8 pt-24 flex flex-col gap-6 md:hidden pointer-events-auto z-40"
+        >
+          {['[ CORE ]', '[ STACK ]', '[ PROTOCOLS ]', '[ LINK ]'].map((item, i) => (
+            <a 
+              key={i} 
+              href={`#${item.replace(/\[|\]|\s/g, '').toLowerCase()}`} 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-lg font-bold text-white border-l-2 border-[#ffae00] pl-4 hover:text-[#ffae00] transition-colors"
+            >
+              {item}
+            </a>
+          ))}
+        </motion.div>
+      )}
+    </nav>
+  );
+};
 
 const ProjectRow = ({ index, title, type, desc, tags }: any) => (
   <div className="group border-b border-white/10 hover:border-[#ffae00] transition-colors duration-300 py-12 relative cursor-none bg-black/20 hover:bg-white/[0.02]">
-    {/* Hover Indicator */}
     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ffae00] scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom" />
-    
     <div className="px-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div className="flex items-start gap-6">
         <span className="font-mono text-xs text-[#ffae00] mt-2">0{index}</span>
@@ -359,12 +429,11 @@ const ProjectRow = ({ index, title, type, desc, tags }: any) => (
           </p>
         </div>
       </div>
-      
-      <div className="flex flex-col items-end gap-4">
-        <p className="text-sm text-gray-400 max-w-sm text-right leading-relaxed hidden md:block">
+      <div className="flex flex-col items-end gap-4 w-full md:w-auto">
+        <p className="text-sm text-gray-400 max-w-sm text-left md:text-right leading-relaxed hidden md:block">
           {desc}
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {tags.map((t: string) => (
             <span key={t} className="text-[9px] border border-white/20 px-2 py-1 text-gray-400 uppercase">{t}</span>
           ))}
@@ -401,6 +470,8 @@ export default function IndustrialPortfolio() {
     <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#ffae00] selection:text-black">
       <GlobalStyles />
       <div className="vignette" />
+      <div className="scanlines" />
+      <ScrollProgress />
       <EngineeringCursor />
       <StructuralScene />
       <NavBar />
@@ -431,11 +502,11 @@ export default function IndustrialPortfolio() {
               Ahmed Elshazli. Engineering high-performance digital infrastructures. <span className="text-[#ffae00]">CCNA Certified</span> Network Specialist & Frontend Developer.
             </p>
 
-            <div className="flex gap-4">
-              <a href="#protocols" className="bg-[#ffae00] text-black px-8 py-4 font-bold text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a href="#protocols" className="bg-[#ffae00] text-black px-8 py-4 font-bold text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2">
                 Init_Sequence <ArrowUpRight size={14} />
               </a>
-              <a href="#stack" className="border border-white/20 text-white px-8 py-4 font-bold text-xs uppercase tracking-widest hover:border-[#ffae00] hover:text-[#ffae00] transition-colors">
+              <a href="#stack" className="border border-white/20 text-white px-8 py-4 font-bold text-xs uppercase tracking-widest hover:border-[#ffae00] hover:text-[#ffae00] transition-colors text-center">
                 View_Specs
               </a>
             </div>
@@ -505,7 +576,7 @@ export default function IndustrialPortfolio() {
             </span>
           </a>
 
-          <footer className="mt-20 w-full border-t border-white/10 pt-8 flex justify-between text-[9px] font-mono uppercase text-gray-500">
+          <footer className="mt-20 w-full border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between text-[9px] font-mono uppercase text-gray-500 gap-4 md:gap-0">
             <span>© 2025 Ahmed Elshazli</span>
             <div className="flex gap-6">
               <a href="#" className="hover:text-[#ffae00]">Github</a>
