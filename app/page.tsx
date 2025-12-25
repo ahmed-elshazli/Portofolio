@@ -59,7 +59,8 @@ const GlobalStyles = () => (
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 9997;
-      background: radial-gradient(circle, transparent 30%, rgba(10,10,10,0.95) 100%);
+      /* FIX: Made the vignette lighter (0.4 instead of 0.95) and wider (50% instead of 30%) */
+      background: radial-gradient(circle, transparent 50%, rgba(10,10,10,0.4) 100%);
     }
 
     .scanlines {
@@ -67,8 +68,8 @@ const GlobalStyles = () => (
         to bottom,
         rgba(255,255,255,0),
         rgba(255,255,255,0) 50%,
-        rgba(0,0,0,0.1) 50%,
-        rgba(0,0,0,0.1)
+        rgba(0,0,0,0.05) 50%, /* Lighter scanlines */
+        rgba(0,0,0,0.05)
       );
       background-size: 100% 4px;
       position: fixed;
@@ -200,7 +201,8 @@ const StructuralScene = () => {
     if (!mountRef.current) return;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0a0a, 0.015);
+    // FIX: Reduced fog density to see further into the corners
+    scene.fog = new THREE.FogExp2(0x0a0a0a, 0.008); 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 0, 40);
@@ -211,12 +213,18 @@ const StructuralScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // --- LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.02); 
+    // FIX: Increased ambient light significantly (0.15 instead of 0.02)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.15); 
     scene.add(ambientLight);
 
     const flashlight = new THREE.PointLight(0xffae00, 8, 45, 1.5);
     flashlight.position.z = 15;
     scene.add(flashlight);
+
+    // FIX: Added a secondary fill light to illuminate shadows/edges
+    const fillLight = new THREE.DirectionalLight(0xffae00, 0.3);
+    fillLight.position.set(10, 0, 10);
+    scene.add(fillLight);
 
     const rimLight = new THREE.DirectionalLight(0x224466, 0.5);
     rimLight.position.set(-10, 10, -10);
@@ -604,7 +612,7 @@ export default function IndustrialPortfolio() {
             <div className="flex gap-6">
               <a href="https://github.com/ahmed-elshazli" className="hover:text-[#ffae00]">Github</a>
               <a href="https://www.linkedin.com/in/ahmed-elshazly-3a3427305?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" className="hover:text-[#ffae00]">LinkedIn</a>
-              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">instagram</a>
+              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Twitter</a>
             </div>
           </footer>
         </SectionWrapper>
