@@ -612,7 +612,7 @@ export default function IndustrialPortfolio() {
             <div className="flex gap-6">
               <a href="https://github.com/ahmed-elshazli" className="hover:text-[#ffae00]">Github</a>
               <a href="https://www.linkedin.com/in/ahmed-elshazly-3a3427305?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" className="hover:text-[#ffae00]">LinkedIn</a>
-              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">Twitter</a>
+              <a href="https://www.instagram.com/ahmed.el.shazli?igsh=MXZmNHVjdjFrbGQ3dg%3D%3D&utm_source=qr" className="hover:text-[#ffae00]">instagram</a>
             </div>
           </footer>
         </SectionWrapper>
