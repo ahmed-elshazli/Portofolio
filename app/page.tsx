@@ -71,22 +71,22 @@ const CONFIG = {
   }
 },
     {
-      link: "https://zenith-core.example.com", // رابط المشروع الثالث
-      image: "/profile.jpg",
-      tags: ["TypeScript", "Micro-frontends", "UI/UX"],
-      en: { 
-        title: "Zenith Core", 
-        category: "AI ANALYTICS", 
-        desc: "Predictive AI dashboard handling millions of data points flawlessly with highly scalable micro-frontend architecture.", 
-        year: "2023" 
-      },
-      ar: { 
-        title: "نواة زينيث", 
-        category: "تحليلات الذكاء الاصطناعي", 
-        desc: "لوحة تحكم ذكية تعالج ملايين نقاط البيانات بسلاسة تامة، مبنية على معمارية واجهات أمامية مصغرة (Micro-frontends) قابلة للتوسع.", 
-        year: "٢٠٢٣" 
-      }
-    }
+  link: "#", // لسه مخلصش فبنحط شباك أو رابط الـ GitHub لو متاح
+  image: "/soon.jpeg", // اتأكد إنك تحط صورة فيها كلمة Coming Soon في مجلد public
+  tags: ["Next.js", "Stripe", "Redux", "Node.js"], // تاجز بتدل على مشروع ضخم ومعقد
+  en: { 
+    title: "Zenith E-Mall (in progress)", 
+    category: "ENTERPRISE E-COMMERCE", 
+    desc: "A massive, scalable retail ecosystem currently under development. Engineered to handle high-traffic volumes with multi-gateway payment integration and a sophisticated merchant dashboard. Launching soon.", 
+    year: "2026" 
+  },
+  ar: { 
+    title: "زينيث مول (Zenith)", 
+    category: "منظومة تجارة إلكترونية", 
+    desc: "نظام تجارة إلكترونية ضخم وقابل للتوسع في مراحل التطوير النهائية. مصمم لمعالجة الزيارات الكثيفة مع دعم بوابات دفع متعددة ولوحة تحكم متطورة للتجار. قادم قريباً.", 
+    year: "٢٠٢٦" 
+  }
+}
   ]
 };
 
